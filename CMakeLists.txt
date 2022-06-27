@@ -1,5 +1,5 @@
 #To choose 'easy' version of homework you should remove '#' on the second line and remove the third line at all
-#set(RUN_MODE "easy")
+set(RUN_MODE "easy")
 set(RUN_MODE "hard")
 
 cmake_minimum_required(VERSION 3.9)
