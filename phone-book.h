@@ -1,20 +1,23 @@
-#pragma once
-
 #include <iostream>
+#include <map>
+#include <memory>
+#include <set>
 #include <string>
 #include <vector>
+
+using namespace std;
 
 /**
  * Structure for call-record with defined equality operator and output operator
  */
 struct call_t {
-  std::string number;
+  string number;
   double duration_s{0};
 
   friend bool operator==(const call_t &a, const call_t &b) {
     return a.number == b.number && a.duration_s == b.duration_s;
   }
-  friend std::ostream &operator<<(std::ostream &stream, const call_t &a) {
+  friend ostream &operator<<(ostream &stream, const call_t &a) {
     return stream << "call_t { number: " << a.number << ";  " << "duration_s: " << a.duration_s << "; }";
   }
 };
@@ -23,13 +26,13 @@ struct call_t {
  * Structure for user with defined equality operator and output operator
  */
 struct user_t {
-  std::string number;
-  std::string name;
+  string number;
+  string name;
 
   friend bool operator==(const user_t &a, const user_t &b) {
     return a.number == b.number && a.name == b.name;
   }
-  friend std::ostream &operator<<(std::ostream &stream, const user_t &a) {
+  friend ostream &operator<<(ostream &stream, const user_t &a) {
     return stream << "user_t { number: " << a.number << ";  " << "name: " << a.name << "; }";
   }
 };
@@ -44,7 +47,7 @@ struct user_info_t {
   friend bool operator==(const user_info_t &a, const user_info_t &b) {
     return a.user == b.user && a.total_call_duration_s == b.total_call_duration_s;
   }
-  friend std::ostream &operator<<(std::ostream &stream, const user_info_t &a) {
+  friend ostream &operator<<(ostream &stream, const user_info_t &a) {
     return stream << "user_info_t { user: " << a.user << ";  " << "duration_s: " << a.total_call_duration_s << "; }";
   }
 };
@@ -81,7 +84,7 @@ public:
    * @param name -- name of new user
    * @return was user actually created
    */
-  bool create_user(const std::string &number, const std::string &name);
+  bool create_user(const string &number, const string &name);
 
   /**
    * Add call-history record. If user with specified number exists
@@ -97,7 +100,7 @@ public:
    * @param count -- number of call-records to return
    * @return calls[start_pos ... start_pos + count - 1]
    */
-  std::vector<call_t> get_calls(size_t start_pos, size_t count) const;
+  vector<call_t> get_calls(size_t start_pos, size_t count) const;
 
   /**
    * Find at most count users with number starts with number_prefix sorted by:
@@ -108,7 +111,7 @@ public:
    * @param count desired number of users to find
    * @return vector of search result, sorted by rules above
    */
-  std::vector<user_info_t> search_users_by_number(const std::string &number_prefix, size_t count) const;
+  vector<user_info_t> search_users_by_number(const string &number_prefix, size_t count) const;
 
   /**
    * Find at most count users with name starts with name_prefix sorted by:
@@ -119,7 +122,7 @@ public:
    * @param count desired number of users to find
    * @return vector of search result, sorted by rules above
    */
-  std::vector<user_info_t> search_users_by_name(const std::string &name_prefix, size_t count) const;
+  vector<user_info_t> search_users_by_name(const string &name_prefix, size_t count) const;
 
   /**
    * Make your phone book empty
@@ -136,5 +139,27 @@ public:
    */
   bool empty() const;
 
-private:
+public:
+  using PhoneNumber = string;
+  using PhoneNumberPrefix = string;
+  using SharedUserInfo = shared_ptr<user_info_t>;
+
+  map <PhoneNumber, SharedUserInfo> contacts;
+  vector <call_t> callHistory;
+  map <PhoneNumberPrefix, set<SharedUserInfo, NumberIndexComparator>> numberIndex;
+  set <SharedUserInfo, NameIndexComparator> nameIndex;
+
+  SharedUserInfo createSharedInfo(const string &number, const string &name, double duration = 0);
+
+  void addIndexes(const SharedUserInfo &userInfo);
+  void removeIndexes(const SharedUserInfo &userInfo);
+  void addNumberIndex(const SharedUserInfo &userInfo);
+  void removeNumberIndex(const SharedUserInfo &userInfo);
+
+  struct NameIndexComparator {
+    bool operator()(const SharedUserInfo &, const SharedUserInfo &) const;
+  };
+  struct NumberIndexComparator {
+    bool operator()(const SharedUserInfo &, const SharedUserInfo &) const;
+  };
 };
