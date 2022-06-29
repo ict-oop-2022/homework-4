@@ -120,7 +120,7 @@ void phone_book_t::removeNumberIndex(const SharedUserInfo &userInfo) {
 }
 
 bool phone_book_t::NameIndexComparator operator()(const SharedUserInfo &a, const SharedUserInfo &b) const {
-  if (a.get() == nullptr || b.get() == nullptr) throw throw invalid_argument("Invalid input");
+  if (a.get() == nullptr || b.get() == nullptr) throw invalid_argument("Invalid input");
   auto comp = a->user.name.compare(b->user.name);
   if (comp != 0) return comp < 0;
   else if (a->total_call_duration_s != b->total_call_duration_s)
@@ -129,7 +129,7 @@ bool phone_book_t::NameIndexComparator operator()(const SharedUserInfo &a, const
 }
 
 bool phone_book_t::NumberIndexComparator::operator()(const SharedUserInfo &a, const SharedUserInfo &b) const {
-  if (a.get() == nullptr || b.get() == nullptr) throw throw invalid_argument("Invalid input");
+  if (a.get() == nullptr || b.get() == nullptr) throw invalid_argument("Invalid input");
   if (a->total_call_duration_s != b->total_call_duration_s) return a->total_call_duration_s > b->total_call_duration_s;
   else {
     auto comp = a->user.name.compare(b->user.name);
