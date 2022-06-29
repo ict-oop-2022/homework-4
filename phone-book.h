@@ -137,4 +137,7 @@ public:
   bool empty() const;
 
 private:
+  std::vector<user_t> Contacts;
+  std::vector<call_t> Calls;
+  std::vector<user_info_t> User_info;
 };
