@@ -81,7 +81,7 @@ SharedUserInfo phone_book_t::createSharedInfo(const string &number, const string
   return make_shared <user_info_t> (user_info_t{user_t{number, name}, duration});
 }
 
-void phone_book_t::_addIndexes(const SharedUserInfo &userInfo) {
+void phone_book_t::addIndexes(const SharedUserInfo &userInfo) {
   if (userInfo.get() == nullptr) throw invalid_argument("Wrong input");
   auto it = nameIndex.insert(userInfo);
   if (!it.second) throw invalid_argument("Null Pointer Exception");
@@ -95,7 +95,7 @@ void phone_book_t::removeIndexes(const SharedUserInfo &userInfo) {
   removeNumberIndex(userInfo);
 }
 
-void phone_book_t::_addNumberIndex(const SharedUserInfo &userInfo) {
+void phone_book_t::addNumberIndex(const SharedUserInfo &userInfo) {
   if (userInfo.get() == nullptr) throw invalid_argument("Wrong input");
   PhoneNumberPrefix numberPrefix = "";
   auto it = numberIndex[numberPrefix].insert(userInfo);
