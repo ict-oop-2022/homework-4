@@ -139,7 +139,7 @@ public:
    */
   bool empty() const;
 
-private:
+public:
   using PhoneNumber = string;
   using PhoneNumberPrefix = string;
   using SharedUserInfo = shared_ptr<user_info_t>;
