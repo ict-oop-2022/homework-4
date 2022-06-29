@@ -3,6 +3,8 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <map>
+#include <set>
 
 /**
  * Structure for call-record with defined equality operator and output operator
@@ -101,9 +103,9 @@ public:
 
   /**
    * Find at most count users with number starts with number_prefix sorted by:
-   *    total call duration
-   *    name
-   *    number
+   *    total call duration (dec)
+   *    name (inc)
+   *    number (dec)
    * @param number_prefix prefix for users' number to search
    * @param count desired number of users to find
    * @return vector of search result, sorted by rules above
@@ -112,9 +114,9 @@ public:
 
   /**
    * Find at most count users with name starts with name_prefix sorted by:
-   *    name
-   *    total call duration
-   *    number
+   *    name  (inc)
+   *    total call duration (dec)
+   *    number (dec)
    * @param name_prefix prefix for users' name to search
    * @param count desired number of users to find
    * @return vector of search result, sorted by rules above
@@ -129,12 +131,30 @@ public:
   /**
    * @return count of users in your phone book
    */
-  size_t size() const;
+  inline size_t size() const {
+    return user_info_by_number.size();
+  }
 
   /**
    * @return is you phone book empty
    */
-  bool empty() const;
+  inline bool empty() const {
+    return user_info_by_number.empty();
+  }
 
 private:
+  struct CompareUserInfoForName {
+    bool operator()(const user_info_t &lhs, const user_info_t &rhs) const;
+  };
+
+  struct CompareUserInfoForNumber {
+    bool operator()(const user_info_t &lhs, const user_info_t &rhs) const;
+  };
+
+  std::map<std::string, user_info_t> user_info_by_number;
+  std::vector<call_t> calls;
+  std::set<user_info_t, CompareUserInfoForName> user_info_for_name;
+  std::map<std::string, std::set<user_info_t, CompareUserInfoForNumber>> user_info_for_number;
 };
+
+// vim: bs=2 tabstop=2 softtabstop=2 shiftwidth=2 expandtab
