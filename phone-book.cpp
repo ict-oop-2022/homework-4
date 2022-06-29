@@ -5,10 +5,7 @@
 
 bool phone_book_t::create_user(const string &number, const string &name) {
   auto it = contacts.find(number);
-  if (it != contacts.end()) {
-    return false;
-  }
-
+  if (it != contacts.end()) return false;
   SharedUserInfo userInfo = createSharedInfo(number, name);
   contacts[number] = userInfo;
   addToIndexes(userInfo);
@@ -51,14 +48,9 @@ vector<user_info_t> phone_book_t::search_users_by_number(const string &number_pr
 }
 
 bool starts_with_prefix(const string &s, const string &prefix) {
-  if (prefix.size() > s.size()) {
-    return false;
-  }
-  for (size_t i = 0; i < prefix.size(); ++i) {
-    if (s[i] != prefix[i]) {
-      return false;
-    }
-  }
+  if (prefix.size() > s.size()) return false;
+  for (size_t i = 0; i < prefix.size(); ++i)
+    if (s[i] != prefix[i]) return false;
   return true;
 }
 
@@ -90,33 +82,33 @@ SharedUserInfo phone_book_t::createSharedInfo(const string &number, const string
 }
 
 void phone_book_t::_addIndexes(const SharedUserInfo &userInfo) {
-  if(userInfo.get() == nullptr) throw invalid_argument("Wrong input");
+  if (userInfo.get() == nullptr) throw invalid_argument("Wrong input");
   auto it = nameIndex.insert(userInfo);
-  if(!it.second) throw invalid_argument("Null Pointer Exception");
+  if (!it.second) throw invalid_argument("Null Pointer Exception");
   addNumberIndex(userInfo);
 }
 
 void phone_book_t::removeIndexes(const SharedUserInfo &userInfo) {
-  if(userInfo.get() == nullptr) throw invalid_argument("Wrong input");
+  if (userInfo.get() == nullptr) throw invalid_argument("Wrong input");
   auto n = nameIndex.erase(userInfo);
-  if(n == 0) throw invalid_argument("Null Pointer Exception");
+  if (n == 0) throw invalid_argument("Null Pointer Exception");
   removeNumberIndex(userInfo);
 }
 
 void phone_book_t::_addNumberIndex(const SharedUserInfo &userInfo) {
-  if(userInfo.get() == nullptr) throw invalid_argument("Wrong input");
+  if (userInfo.get() == nullptr) throw invalid_argument("Wrong input");
   PhoneNumberPrefix numberPrefix = "";
   auto it = numberIndex[numberPrefix].insert(userInfo);
-  if(!it.second) throw invalid_argument("Null Pointer Exception");
+  if (!it.second) throw invalid_argument("Null Pointer Exception");
   for (char i : userInfo->user.number) {
     numberPrefix += i;
     it = numberIndex[numberPrefix].insert(userInfo);
-    if(!it.second) throw invalid_argument("Null Pointer Exception");
+    if (!it.second) throw invalid_argument("Null Pointer Exception");
   }
 }
 
 void phone_book_t::removeNumberIndex(const SharedUserInfo &userInfo) {
-  if(userInfo.get() == nullptr) throw invalid_argument("Wrong input");
+  if (userInfo.get() == nullptr) throw invalid_argument("Wrong input");
   PhoneNumberPrefix numberPrefix = "";
   auto n = numberIndex[numberPrefix].erase(userInfo);
   if(n == 0) throw invalid_argument("Null Pointer Exception");
@@ -128,10 +120,20 @@ void phone_book_t::removeNumberIndex(const SharedUserInfo &userInfo) {
 }
 
 bool phone_book_t::NameIndexComparator operator()(const SharedUserInfo &a, const SharedUserInfo &b) const {
-  if(a.get() == nullptr || b.get() == nullptr) throw throw invalid_argument("Invalid input");
+  if (a.get() == nullptr || b.get() == nullptr) throw throw invalid_argument("Invalid input");
   auto comp = a->user.name.compare(b->user.name);
   if (comp != 0) return comp < 0;
   else if (a->total_call_duration_s != b->total_call_duration_s)
     return a->total_call_duration_s > b->total_call_duration_s;
   else return a->user.number < b->user.number;
+}
+
+bool phone_book_t::NumberIndexComparator::operator()(const SharedUserInfo &a, const SharedUserInfo &b) const {
+  if (a.get() == nullptr || b.get() == nullptr) throw throw invalid_argument("Invalid input");
+  if (a->total_call_duration_s != b->total_call_duration_s) return a->total_call_duration_s > b->total_call_duration_s;
+  else {
+    auto comp = a->user.name.compare(b->user.name);
+    if (comp != 0) return comp < 0;
+    else return a->user.number < b->user.number;
+  }
 }

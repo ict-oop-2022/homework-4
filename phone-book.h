@@ -155,4 +155,11 @@ private:
   void removeIndexes(const SharedUserInfo &userInfo);
   void addNumberIndex(const SharedUserInfo &userInfo);
   void removeNumberIndex(const SharedUserInfo &userInfo);
+
+  struct NameIndexComparator {
+    bool operator()(const SharedUserInfo &, const SharedUserInfo &) const;
+  };
+  struct NumberIndexComparator {
+    bool operator()(const SharedUserInfo &, const SharedUserInfo &) const;
+  };
 };
