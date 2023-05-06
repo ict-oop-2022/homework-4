@@ -2,7 +2,10 @@
 
 #include <iostream>
 #include <string>
+#include <algorithm>
 #include <vector>
+
+
 
 /**
  * Structure for call-record with defined equality operator and output operator
@@ -137,4 +140,8 @@ public:
   bool empty() const;
 
 private:
+  std::vector<call_t> call_book;
+  std::vector<user_t> user_book;
+  std::vector<user_info_t> user_info_book;
 };
+
